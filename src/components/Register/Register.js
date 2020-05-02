@@ -6,7 +6,8 @@ class Register extends React.Component {
     this.state = {
       email: '',
       password: '',
-      name: ''
+      name: '',
+      loading: false
     }
   }
 
@@ -23,7 +24,9 @@ class Register extends React.Component {
   }
 
   onSubmitSignIn = () => {
-    fetch('https://mysterious-waters-21668.herokuapp.com/register', {
+    this.setState({loading: true});
+
+    fetch('http://localhost:3001/register', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -33,12 +36,14 @@ class Register extends React.Component {
       })
     })
       .then(response => response.json())
+      // .then(() => this.setState({loading: false}))
       .then(user => {
         if (user.id) {
           this.props.loadUser(user)
           this.props.onRouteChange('home');
         }
       })
+      // this.setState({loading: false});
   }
 
   render() {
@@ -82,12 +87,16 @@ class Register extends React.Component {
                 </div>
               </fieldset>
               <div className="">
-                <input
-                  onClick={this.onSubmitSignIn}
-                  className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib"
-                  type="submit"
-                  value="Register"
-                />
+                {!this.state.loading ? (
+                  <input
+                    onClick={this.onSubmitSignIn}
+                    className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib"
+                    type="submit"
+                    value="Register"
+                  />
+                ) : (
+                  <p>Loading...</p>
+                )}  
               </div>
             </div>
           </main>
