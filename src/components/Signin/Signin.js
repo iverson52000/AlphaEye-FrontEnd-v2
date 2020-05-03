@@ -1,5 +1,7 @@
 import React from 'react';
 
+//url = 'https://mysterious-waters-21668.herokuapp.com/imageurl';
+
 class Signin extends React.Component {
   constructor(props) {
     super(props);
@@ -21,7 +23,7 @@ class Signin extends React.Component {
   onSubmitSignIn = () => {
     this.setState({loading: true});
 
-    fetch('http://localhost:3001/signin', {
+    fetch('https://mysterious-waters-21668.herokuapp.com/signin', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -30,6 +32,7 @@ class Signin extends React.Component {
       })
     })
       .then(response => response.json())
+
       .then(user => {
         if (user.id) {
           this.props.loadUser(user)
@@ -37,9 +40,13 @@ class Signin extends React.Component {
         }
         else {
           this.setState({loading: false});
-          alert("wrong credential!")
+          alert("Wrong credential!")
         }
       })
+      .catch(() => {
+        this.setState({loading: false})
+        alert("Something went wrong!")
+        })
       // .then(() => this.setState({loading: false}));
   }
 
