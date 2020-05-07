@@ -51,6 +51,41 @@ class App extends Component {
     this.state = initialState;
   }
 
+  //check if user have session
+  componentDidMount() {
+    const token = window.sessionStorage.getItem('token');
+
+    if (token) {
+      fetch('http://localhost:3001/signin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token
+        }
+      })
+        .then((resp) => resp.json())
+        .then((data) => {
+          if (data && data.id) {
+            fetch(`http://localhost:3001/profile/${data.id}`, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': token
+              }
+            })
+            .then((resp) => resp.json())
+            .then((user) => {
+              if (user && user.email) {
+                this.loadUser(user);
+                this.onRouteChange('home');
+              }
+            })
+          }
+        })
+        .catch(console.log);
+    }
+  }
+
   loadUser = (data) => {
     this.setState({user: {
       id: data.id,
@@ -115,9 +150,10 @@ class App extends Component {
 
   onRouteChange = (route) => {
     if (route === 'signout') {
-      this.setState(initialState)
+      this.setState(initialState);
+      window.sessionStorage.removeItem('token');
     } else if (route === 'home') {
-      this.setState({isSignedIn: true})
+      this.setState({isSignedIn: true});
     }
     this.setState({route: route});
   }

@@ -21,6 +21,10 @@ class Signin extends React.Component {
     this.setState({signInPassword: event.target.value})
   }
 
+  saveAuthTokenInSessions = (token) => {
+    window.sessionStorage.setItem('token', token);
+  }
+
   onSubmitSignIn = () => {
     this.setState({loading: true});
 
@@ -33,22 +37,21 @@ class Signin extends React.Component {
       })
     })
       .then(response => response.json())
-
-      .then(user => {
-        if (user.id) {
-          this.props.loadUser(user)
+      .then((data) => {
+        if (data && data.success === "true") {
+          this.saveAuthTokenInSessions(data.token);
+          this.props.loadUser(data.user);
           this.props.onRouteChange('home');
         }
         else {
           this.setState({loading: false});
-          alert("Wrong credential!")
+          alert("Wrong credential!");
         }
       })
       .catch(() => {
-        this.setState({loading: false})
-        alert("Something went wrong!")
+        this.setState({loading: false});
+        alert("Something went wrong!");
         })
-      // .then(() => this.setState({loading: false}));
   }
 
   render() {
